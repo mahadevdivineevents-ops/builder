@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { getAdminSession } from "@/lib/auth";
 import { uploadToCloudinary } from "@/lib/cloudinary";
@@ -36,6 +37,10 @@ export async function PUT(request, { params }) {
     if (!service) {
       return NextResponse.json({ error: "Service not found" }, { status: 404 });
     }
+
+    revalidatePath("/");
+    revalidatePath("/services");
+    revalidatePath("/admin");
     return NextResponse.json(service);
   } catch (error) {
     return NextResponse.json({ error: error?.issues?.[0]?.message || error.message }, { status: 400 });
@@ -55,6 +60,10 @@ export async function DELETE(_, { params }) {
     if (!service) {
       return NextResponse.json({ error: "Service not found" }, { status: 404 });
     }
+
+    revalidatePath("/");
+    revalidatePath("/services");
+    revalidatePath("/admin");
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: error.message || "Unable to delete service" }, { status: 400 });

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getAdminSession } from "@/lib/auth";
 import { connectDB } from "@/lib/mongodb";
 import Project from "@/models/Project";
@@ -16,6 +17,10 @@ export async function DELETE(_, { params }) {
     if (!project) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
+
+    revalidatePath("/");
+    revalidatePath("/projects");
+    revalidatePath("/admin");
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: error.message || "Unable to delete project" }, { status: 400 });

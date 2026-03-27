@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getAdminSession } from "@/lib/auth";
 import { uploadBufferToCloudinary } from "@/lib/cloudinary";
 import { connectDB } from "@/lib/mongodb";
@@ -47,6 +48,10 @@ export async function POST(request) {
       category,
       image: upload.url,
     });
+
+    revalidatePath("/");
+    revalidatePath("/projects");
+    revalidatePath("/admin");
 
     return NextResponse.json(project, { status: 201 });
   } catch (error) {

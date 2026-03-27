@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getAdminSession } from "@/lib/auth";
 import { uploadBufferToCloudinary } from "@/lib/cloudinary";
 import { connectDB } from "@/lib/mongodb";
@@ -75,6 +76,10 @@ export async function POST(request) {
       price,
       image: upload.url,
     });
+
+    revalidatePath("/");
+    revalidatePath("/services");
+    revalidatePath("/admin");
 
     return NextResponse.json(service, { status: 201 });
   } catch (error) {
